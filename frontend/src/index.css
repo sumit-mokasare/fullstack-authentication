@@ -1,1 +1,75 @@
 @import "tailwindcss";
+
+/* =========================
+   Theme tokens for Tailwind
+========================= */
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+/* =========================
+   Light theme
+========================= */
+:root {
+  --background: #f8fafc;
+  --foreground: #111827;
+
+  --card: #ffffff;
+  --card-foreground: #111827;
+
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+
+  --border: #e5e7eb;
+
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+
+  --input: #ffffff;
+  --ring: #93c5fd;
+}
+
+/* =========================
+   Dark theme
+========================= */
+.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+
+  --card: #111827;
+  --card-foreground: #f8fafc;
+
+  --primary: #60a5fa;
+  --primary-foreground: #0f172a;
+
+  --border: #243041;
+
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+
+  --input: #0b1220;
+  --ring: #60a5fa;
+}
+
+/* optional base */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: Inter, system-ui, sans-serif;
+}
