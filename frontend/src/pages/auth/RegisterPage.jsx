@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="mt-5 space-y-3">
       <form noValidate>

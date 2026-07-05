@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 export const useApi = (apiFun, options = {}) => {
@@ -13,7 +13,7 @@ export const useApi = (apiFun, options = {}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const excute = useCallback(
+  const execute = useCallback(
     async (...args) => {
       setIsLoading(true);
       setError(null);
