@@ -1,101 +1,62 @@
 import { Box, Mail, Lock, User, Image, Eye } from 'lucide-react';
+import { Input } from '../../components/ui/Input';
+import { ShowPassword } from '../../utils';
+import { useState } from 'react';
+import { Button } from '../../components/ui/Button';
 
 export default function RegisterPage() {
+  const [showPassword, setShowPassword] = useState(false);
   return (
-    <div className="flex w-full flex-col justify-between p-6 md:w-1/2 md:p-8 lg:p-10">
-      <div>
-        <div className="mb-8 flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <Box size={20} />
-          </div>
-          <span className="text-lg font-semibold">Auth System</span>
+    <div className="mt-5 space-y-3">
+      <form noValidate>
+        <div className="space-y-2">
+          <Input
+            label="Username"
+            type="text"
+            placeholder="username"
+            leftIcon={User}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Input
+            label="Email"
+            type="email"
+            placeholder="your@example.com"
+            leftIcon={Mail}
+            required
+          />
         </div>
 
-        <div className="mx-auto w-full max-w-md">
-          <p className="mb-1 text-sm text-muted-foreground">
-            Create your account
-          </p>
-          <h1 className="text-2xl font-bold">Sign up to Auth System</h1>
-
-          <div className="mt-5 space-y-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Username</label>
-              <div className="flex h-10 items-center rounded-xl border border-border bg-background px-4">
-                <input
-                  type="text"
-                  placeholder="Enter your username"
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                />
-                <User size={18} className="text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Email</label>
-              <div className="flex h-10 items-center rounded-xl border border-border bg-background px-4">
-                <input
-                  type="email"
-                  placeholder="example@email.com"
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                />
-                <Mail size={18} className="text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Password</label>
-              <div className="flex h-10 items-center rounded-xl border border-border bg-background px-4">
-                <input
-                  type="password"
-                  placeholder="Create a password"
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                />
-                <Eye size={18} className="text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Avatar</label>
-              <div className="flex h-10 items-center rounded-xl border border-border bg-background px-4">
-                <input
-                  type="file"
-                  className="w-full bg-transparent text-sm outline-none file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1 file:text-sm file:text-primary-foreground"
-                />
-                <Image size={18} className="text-muted-foreground" />
-              </div>
-            </div>
-
-            <button className="h-10 w-full rounded-xl bg-primary text-sm font-medium text-primary-foreground">
-              Sign Up
-            </button>
-          </div>
-
-          <div className="my-4 flex items-center gap-4">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-sm text-muted-foreground">
-              or sign up with
-            </span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <button className="flex h-10 items-center justify-center rounded-xl border border-border bg-background">
-              {/* <Facebook size={18} /> */}
-            </button>
-            <button className="flex h-10 items-center justify-center rounded-xl border border-border bg-background">
-              {/* <Chrome size={18} /> */}
-            </button>
-            <button className="flex h-10 items-center justify-center rounded-xl border border-border bg-background">
-              {/* <Apple size={18} /> */}
-            </button>
-          </div>
+        <div className="space-y-2">
+          <Input
+            label="Password"
+            type={showPassword ? 'password' : 'text'}
+            placeholder="****"
+            leftIcon={Lock}
+            rightIcon={() => (
+              <ShowPassword
+                currentStatus={showPassword}
+                setStatus={setShowPassword}
+              />
+            )}
+            required
+          />
         </div>
-      </div>
 
-      <p className="pt-4 text-sm text-muted-foreground">
-        Already have an account?{' '}
-        <span className="font-medium text-primary">Sign in</span>
-      </p>
+        <div className="space-y-2">
+          <Input
+            className=" w-full rounded-xl border border-dashed border-border bg-surface p-4 file:mr-4 file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-white hover:file:bg-primary-hover"
+            label="Avatar"
+            type="file"
+            accept="image/*"
+          />
+        </div>
+
+        <button className="h-10 w-full mt-2 rounded-xl bg-primary text-sm font-medium text-primary-foreground">
+          Sign Up
+        </button>
+      </form>
     </div>
   );
 }
