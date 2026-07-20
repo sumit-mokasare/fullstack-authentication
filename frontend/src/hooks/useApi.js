@@ -20,19 +20,26 @@ export const useApi = (apiFun, options = {}) => {
 
       try {
         const response = await apiFun(...args);
+
         if (response) {
           setData(response);
         }
+
         if (showSuccessToast) toast.success(successMessage);
+
         onSuccess?.(response);
+
         return response;
       } catch (error) {
         const message =
-          error.response?.data?.message ||
+          error.response?.data ||
           error.message ||
           'Something went wrong during api call';
+
         setError(message);
+
         if (showErrorToast) toast.error(message);
+
         onError?.(error);
       } finally {
         setIsLoading(false);

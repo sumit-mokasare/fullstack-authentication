@@ -1,9 +1,7 @@
 import axios from 'axios';
+import { meta } from 'zod/v4/core';
 export const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:3000/api/vi/',
-  Headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    Credential: 'include',
-  },
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+  withCredentials: true,
+  Headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 });

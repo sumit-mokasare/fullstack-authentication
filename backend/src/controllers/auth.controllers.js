@@ -28,6 +28,8 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const Register = asyncHandler(async (req, res) => {
+  console.log(req.body);
+
   // get data form user
   const { username, email, password } = req.body;
   const avatar = req.file?.path || "";
@@ -306,7 +308,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     console.log("error in refresh accesstoken ==", error.message);
     throw new ApiErro(401, error.message || "Invalid Refresh token ");
   }
-}); 
+});
 
 const forgotPassword = asyncHandler(async (req, res) => {
   // get email from body

@@ -4,7 +4,7 @@ import { ApiErro } from "../utils/api-error.js";
 const validator = (req, res, next) => {
   const errors = validationResult(req);
   // console.log( 'error :::',errors);
-  
+
   // console.log('all errros in validator := ' , errors );
 
   if (errors.isEmpty()) {
