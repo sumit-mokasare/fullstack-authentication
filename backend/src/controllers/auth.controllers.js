@@ -465,8 +465,6 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     },
   ).select("-password -refreshToken");
 
-  console.log("userrr +++++++++", user);
-
   return res
     .status(200)
     .json(new ApiResponse(200, user, "Avatar update successfully", true));
@@ -553,9 +551,6 @@ const googleCallback = asyncHandler(async (req, res) => {
     if (!user.googleId) {
       user.googleId = sub;
       await user.save();
-      return res.status(200).json({
-        message: "login huaa",
-      });
     }
   }
 
@@ -580,7 +575,7 @@ const googleCallback = asyncHandler(async (req, res) => {
   return res
     .cookie("accessToken", accessToken, { httpOnly: true, secure: true })
     .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
-    .redirect("http://127.0.0.1:3000/api/v1/users/profile "); // or send JSON
+    .redirect(`${process.env.FRONTEND_URL}/oauth-success`); // or send JSON
 });
 
 export {

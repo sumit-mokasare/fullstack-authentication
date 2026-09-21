@@ -1,8 +1,27 @@
 import React from 'react';
-import LoginPage from '../../pages/auth/LoginPage';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Box, Link2, MoveLeft } from 'lucide-react';
-import ProfileDetail from '../ui/ProfileDetail';
+import { Box, MoveLeft, ShieldCheck, Zap, Lock } from 'lucide-react';
+
+const features = [
+  {
+    icon: ShieldCheck,
+    title: 'Secure by default',
+    description:
+      'httpOnly cookies and short-lived access tokens keep your session safe.',
+  },
+  {
+    icon: Zap,
+    title: 'One-click Google sign-in',
+    description:
+      'Skip the password entirely and get in with your Google account.',
+  },
+  {
+    icon: Lock,
+    title: 'Your data, protected',
+    description:
+      'Verified email, encrypted credentials, nothing shared without consent.',
+  },
+];
 
 export const AuthLayout = () => {
   const { pathname } = useLocation();
@@ -10,11 +29,6 @@ export const AuthLayout = () => {
 
   return (
     <div className="min-h-screen  flex justify-center items-center   bg-background p-4 text-foreground md:p-6">
-      <Link to={'/'}>
-        <button className="absolute right-1.5 top-1.5 rounded-xl m-2 border border-border bg-background px-5 py-2 text-sm font-medium transition hover:bg-muted">
-          <MoveLeft size={16} />
-        </button>
-      </Link>
       <div className="mx-auto flex h-full w-full max-w-6xl overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         {/* left side */}
         <div className="flex w-full flex-col justify-center p-6 md:w-1/2 md:p-8 lg:p-10">
@@ -48,7 +62,10 @@ export const AuthLayout = () => {
               </div>
 
               <div>
-                <button className="inline-flex cursor-pointer w-full items-center justify-center gap-3 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-card-foreground transition-all duration-150 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                <a
+                  href={`${import.meta.env.VITE_BACKEND_URL}users/google`}
+                  className="inline-flex cursor-pointer w-full items-center justify-center gap-3 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-card-foreground transition-all duration-150 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 48 48"
@@ -72,7 +89,7 @@ export const AuthLayout = () => {
                     />
                   </svg>
                   <span>Continue with Google</span>
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -90,10 +107,43 @@ export const AuthLayout = () => {
             </span>
           </p>
         </div>
-        {/* <ProfileDetail /> */}
+
         {/* right side */}
-        <div className=" min-h-full md:block md:w-1/2">
-          <div className="h-full w-full bg-linear-to-br from-sky-200 via-blue-300 to-pink-200 dark:from-slate-800 dark:via-blue-900 dark:to-purple-900" />
+        <div className="hidden min-h-full md:block md:w-1/2">
+          <div className="relative flex h-full w-full flex-col justify-center gap-8 overflow-hidden bg-linear-to-br from-sky-200 via-blue-300 to-pink-200 p-10 dark:from-slate-800 dark:via-blue-900 dark:to-purple-900">
+            {/* decorative blurred orbs, purely visual */}
+            <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/20 blur-3xl dark:bg-white/5" />
+            <div className="pointer-events-none absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-white/10 blur-3xl dark:bg-black/10" />
+
+            <div className="relative z-10">
+              <h2 className="text-2xl font-bold text-white">
+                Built for security, made simple.
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Everything you need to keep your account safe — without the
+                friction.
+              </p>
+            </div>
+
+            <div className="relative z-10 space-y-4">
+              {features.map(({ icon: Icon, title, description }) => (
+                <div
+                  key={title}
+                  className="flex items-start gap-4 rounded-2xl border border-border/60 bg-card/70 p-4 backdrop-blur-sm"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon size={20} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">{title}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

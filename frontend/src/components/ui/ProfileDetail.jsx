@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { use, useRef, useState } from 'react';
 import {
   X,
   User,
@@ -64,6 +64,7 @@ const ProfileDetail = ({ onClose }) => {
     }
   };
 
+  console.log(user?.avatar?.url);
   const handleResendVerification = async () => {
     if (!user?.email) return;
     setIsResendingVerify(true);
@@ -98,11 +99,17 @@ const ProfileDetail = ({ onClose }) => {
         {/* Profile + Avatar (the only edit action kept inline in this panel) */}
         <div className="flex flex-col items-center border-b border-border px-6 py-8">
           <div className="relative">
-            <img
-              src={user?.avatar?.url || 'https://i.pravatar.cc/150?img=8'}
-              alt={user?.username || 'Profile'}
-              className="h-24 w-24 rounded-full border-4 border-primary object-cover"
-            />
+            {user?.avatar?.url ? (
+              <img
+                src={user.avatar.url}
+                alt={user?.username || 'Profile'}
+                className="h-24 w-24 rounded-full border-4 border-primary object-cover"
+              />
+            ) : (
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-primary bg-primary/10 text-3xl font-semibold text-primary">
+                {user?.username?.[0]?.toUpperCase() || '?'}
+              </div>
+            )}
             <button
               type="button"
               onClick={handleAvatarClick}
@@ -125,9 +132,7 @@ const ProfileDetail = ({ onClose }) => {
             <p className="mt-2 text-xs text-muted-foreground">Uploading...</p>
           )}
           {avatarError && (
-            <p className="mt-2 text-xs text-red-600 text-destructive">
-              {avatarError}
-            </p>
+            <p className="mt-2 text-xs text-destructive">{avatarError}</p>
           )}
 
           <h3 className="mt-4 text-xl font-semibold text-foreground">
@@ -206,20 +211,25 @@ const ProfileDetail = ({ onClose }) => {
             )}
           </div>
 
-          {/* Change password — moved to its own page, this is just a link out */}
-          <Link
-            to="/forgot-password"
-            onClick={onClose}
-            className="flex items-center gap-3 rounded-xl border border-border bg-background p-4 transition hover:bg-muted"
-          >
-            <KeyRound className="text-primary" size={20} />
-            <div>
-              <p className="font-medium text-foreground">Change password</p>
-              <p className="text-xs text-muted-foreground">
-                Send yourself a reset link
-              </p>
-            </div>
-          </Link>
+          {/* Change password — only relevant for password-based accounts.
+              A Google-auth user has no password to reset; showing this
+              would just hit a dead end (and exposes the backend's
+              provider-check bug, see forgotPassword controller). */}
+          {user?.authProvider !== 'google' && (
+            <Link
+              to="/forgot-password"
+              onClick={onClose}
+              className="flex items-center gap-3 rounded-xl border border-border bg-background p-4 transition hover:bg-muted"
+            >
+              <KeyRound className="text-primary" size={20} />
+              <div>
+                <p className="font-medium text-foreground">Change password</p>
+                <p className="text-xs text-muted-foreground">
+                  Send yourself a reset link
+                </p>
+              </div>
+            </Link>
+          )}
         </div>
 
         {/* Footer */}
