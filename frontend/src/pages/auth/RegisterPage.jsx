@@ -2,17 +2,17 @@ import { Box, Mail, Lock, User, Image, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
 import { Input } from '../../components/ui/Input';
 import { ShowPassword } from '../../utils';
 import { Button } from '../../components/ui/Button';
-import { loginSchema, registerSchema } from '../../schemas/authSchema';
+import { registerSchema } from '../../schemas/authSchema';
 import { useApi } from '../../hooks/useApi';
 import { authApi } from '../../api/authApi';
-import { da } from 'zod/v4/locales';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -28,12 +28,14 @@ export default function RegisterPage() {
   const {
     execute: registerUser,
     isLoading,
-    error,
     data,
+    error,
   } = useApi(authApi.register, {
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
+      navigate('/check-email', { state: { email: data.email } });
     },
+    showSuccessToast: true,
+    successMessage: 'Registration successfully',
   });
 
   const onSubmit = async (data) => {
@@ -45,12 +47,30 @@ export default function RegisterPage() {
     if (data.avatar?.[0]) {
       formData.append('avatar', data.avatar[0]);
     }
-    const userResponse = await registerUser(formData);
-    console.log(userResponse);
+    const result = await registerUser(formData);
+
+    if (!result.success) {
+      const errors = result.error?.errors;
+
+      if (Array.isArray(errors) && errors.length > 0) {
+        errors.forEach((err) => {
+          // adjust this line to match your validator's actual error shape —
+          // check what `validator` middleware in validate.middlewares.js sends
+          const field = Object.keys(err)[0];
+          const message = Object.values(err)[0];
+          if (field) setError(field, { type: 'server', message });
+        });
+      }
+      // else: no field-specific errors (e.g. 409 duplicate user) —
+      // rely on the error toast from useApi to surface result.error.message instead
+      return;
+    }
   };
+  console.log('error', error);
 
   return (
     <div className="mt-5 space-y-3">
+      {error && <p className="text-red-500">{error.message}</p>}
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Input
@@ -78,7 +98,7 @@ export default function RegisterPage() {
         <div className="space-y-2">
           <Input
             label="Password"
-            type={showPassword ? 'password' : 'text'}
+            type={showPassword ? 'text' : 'password'}
             placeholder="******"
             leftIcon={Lock}
             rightIcon={() => (

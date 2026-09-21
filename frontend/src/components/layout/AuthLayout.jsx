@@ -2,6 +2,7 @@ import React from 'react';
 import LoginPage from '../../pages/auth/LoginPage';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Box, Link2, MoveLeft } from 'lucide-react';
+import ProfileDetail from '../ui/ProfileDetail';
 
 export const AuthLayout = () => {
   const { pathname } = useLocation();
@@ -89,6 +90,7 @@ export const AuthLayout = () => {
             </span>
           </p>
         </div>
+        {/* <ProfileDetail /> */}
         {/* right side */}
         <div className=" min-h-full md:block md:w-1/2">
           <div className="h-full w-full bg-linear-to-br from-sky-200 via-blue-300 to-pink-200 dark:from-slate-800 dark:via-blue-900 dark:to-purple-900" />

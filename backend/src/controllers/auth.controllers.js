@@ -3,11 +3,26 @@ import { ApiResponse } from "../utils/api-response.js";
 import { User } from "../models/user.models.js";
 import { ApiErro } from "../utils/api-error.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { sendMail, emailVerificationMailGenContent } from "../utils/mail.js";
+import { sendMail, emailVerificationMailGenContent, forgotPasswordMailGenContent } from "../utils/mail.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import jwksClient from "jwks-rsa";
+
+const accessTokenOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  maxAge: 15 * 60 * 1000, // 15 minutes (access token ke liye chota rakho)
+};
+
+const refreshTokenOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 din (refresh token ke liye lamba)
+};
+
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -85,7 +100,7 @@ const Register = asyncHandler(async (req, res) => {
   await user.save({ validateBeforeSave: false });
 
   //  generate verification URL
-  const verificationUrl = `${process.env.BASE_URL}/api/v1/users/verify/${unHashedToken}`;
+  const verificationUrl = `${process.env.FRONTEND_URL}/verify-user?token=${unHashedToken}`;
   const mailContent = emailVerificationMailGenContent(
     username,
     verificationUrl,
@@ -114,7 +129,7 @@ const Register = asyncHandler(async (req, res) => {
 const verifyUser = asyncHandler(async (req, res) => {
   // get token from paramas
   const { token } = req.params;
-  xx;
+
   const hashedToken = await crypto
     .createHash("sha256")
     .update(token)
@@ -141,7 +156,41 @@ const verifyUser = asyncHandler(async (req, res) => {
   //  send success response
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "User verified Successfully", true));
+    .json(new ApiResponse(200, { email: user.email }, "User verified Successfully", true));
+});
+
+
+const resendVerificationEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    throw new ApiErro(400, 'Email is required', false);
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ApiErro(400, 'User not found', false);
+  }
+
+  if (user.isEmailVerified) {
+    throw new ApiErro(200, 'Email already Verified', true);
+  }
+  const { unHashedToken, hashedToken, tokenExpiry } = await user.generateTemporaryToken();
+
+  user.verficationToken = hashedToken;
+  user.verificationExpiry = tokenExpiry;
+  await user.save();
+
+  const verificationUrl = `${process.env.FRONTEND_URL}/verify-user?token=${unHashedToken}`;
+  const content = emailVerificationMailGenContent(user.username, verificationUrl);
+  await sendMail({
+    email: user.email,
+    subject: ' Verify your email',
+    mailGenContent: content,
+  });
+
+  return res.status(200).json(new ApiResponse(200, {}, 'Resent verification token', true));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -190,14 +239,11 @@ const loginUser = asyncHandler(async (req, res) => {
     "-password -refreshToken",
   );
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
+
   return res
     .status(201)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, accessTokenOptions)
+    .cookie("refreshToken", refreshToken, refreshTokenOptions)
     .json(
       new ApiResponse(
         201,
@@ -238,8 +284,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
-    sameSite: "strict", // must match
+    secure: process.env.NODE_ENV === "production", // true only in production
+    sameSite: "lax",
     path: "/", // very important
   };
 
@@ -286,16 +332,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       user._id,
     );
 
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
 
     // set in to cookie agin send response
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, accessTokenOptions)
+      .cookie("refreshToken", refreshToken, refreshTokenOptions)
       .json(
         new ApiResponse(
           200,
@@ -320,7 +362,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   }
 
   if (user.provider === "google") {
-    throw new ApiError(
+    throw new ApiErro(
       400,
       "This account uses Google Sign-In. Please login with Google.",
       false,
@@ -336,9 +378,9 @@ const forgotPassword = asyncHandler(async (req, res) => {
   user.save({ validateBeforeSave: false });
 
   // send mail to user
-  const forgortPasswordUrl = `${process.env.BASE_URL}/api/v1/users/reset-password/${unHashedToken}`;
-  const mailContent = emailVerificationMailGenContent(
-    username,
+  const forgortPasswordUrl = `${process.env.FRONTEND_URL}/reset-password/${unHashedToken}`;
+  const mailContent = forgotPasswordMailGenContent(
+    user.username,
     forgortPasswordUrl,
   );
   await sendMail({
@@ -538,13 +580,14 @@ const googleCallback = asyncHandler(async (req, res) => {
   return res
     .cookie("accessToken", accessToken, { httpOnly: true, secure: true })
     .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
-    .redirect("http://127.0.0.1:3000/api/v1/users/profile"); // or send JSON
+    .redirect("http://127.0.0.1:3000/api/v1/users/profile "); // or send JSON
 });
 
 export {
   Register,
   verifyUser,
   loginUser,
+  resendVerificationEmail,
   getProfile,
   logoutUser,
   refreshAccessToken,

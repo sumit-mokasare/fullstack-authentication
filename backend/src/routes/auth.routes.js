@@ -8,6 +8,7 @@ import {
   logoutUser,
   refreshAccessToken,
   Register,
+  resendVerificationEmail,
   resetPassword,
   updateUserAvatar,
   verifyUser,
@@ -33,13 +34,14 @@ router
     Register,
   );
 router.route("/verify/:token").get(verifyUser);
+router.route("/resent-verification").post(resendVerificationEmail)
 router.route("/login").post(upload.none(), userLoginValidetor(), validator, loginUser);
-router.route("/profile").get(verifyJwt , getProfile);
-router.route("/logout").post(verifyJwt , logoutUser);
+router.route("/profile").get(verifyJwt, getProfile);
+router.route("/logout").post(verifyJwt, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
-router.route("/forgot-password").post( upload.none(), verifyJwt , forgotPassword);
-router.route("/reset-password/:token").post(upload.none(), userResetPasswordValidetor() , validator , resetPassword);
-router.route("/updateAvatar").post(upload.single("avatar"), verifyJwt , updateUserAvatar);
+router.route("/forgot-password").post(upload.none(), verifyJwt, forgotPassword);
+router.route("/reset-password/:token").post(upload.none(), userResetPasswordValidetor(), validator, resetPassword);
+router.route("/updateAvatar").post(upload.single("avatar"), verifyJwt, updateUserAvatar);
 router.route("/google").get(googleLogin)
 router.route("/google/callback").get(googleCallback)
 export default router;

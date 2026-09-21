@@ -1,5 +1,6 @@
 import { Box, ArrowRight, Shield, Lock, Sparkles } from 'lucide-react';
 import Navbar from '../../components/ui/Navbar';
+import VerifyAccountPage from '../auth/VerifyAccountPage';
 
 export default function HomePage() {
   return (

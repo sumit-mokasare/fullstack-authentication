@@ -31,7 +31,7 @@ const verifyJwt = asyncHandler(async (req, _, next) => {
 
     // Access token expired
     if (error.name === "TokenExpiredError") {
-      throw new ApiErro( 401,"Access token expired. Please refresh token.",false,);
+      throw new ApiErro(401, "Access token expired. Please refresh token.", false,);
     }
 
     // Invalid token (modified, fake, wrong secret)

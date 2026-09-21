@@ -2,8 +2,8 @@ import Mailgen from "mailgen";
 import nodemailer from "nodemailer";
 
 const sendMail = async (options) => {
-  console.log('mail optioness ' , options.mailgenContent);
-  
+  console.log('mail optioness ', options.mailgenContent);
+
   const mailGenerator = new Mailgen({
     theme: "default",
     product: {
@@ -23,7 +23,7 @@ const sendMail = async (options) => {
       pass: process.env.MAILTRAP_SMTP_PASS,
     },
   });
-  
+
   const mail = {
     from: "mail.authentication@gmail.com",
     to: options.email,
@@ -84,4 +84,4 @@ const emailVerificationMailGenContent = (username, verificationUrl) => {
 //   mailGenContect: emailVerificationMailGenContent(username, ""),
 // });
 
-export { sendMail  , emailVerificationMailGenContent};
+export { sendMail, emailVerificationMailGenContent, forgotPasswordMailGenContent };

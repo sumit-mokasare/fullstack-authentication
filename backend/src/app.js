@@ -10,15 +10,15 @@ dotenv.config({
   path: "./.env",
 });
 
+app.use(cookieParser());
 app.use(expess.json());
 app.use(expess.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-    methods: ["POST", "GET", "PUT", "DELETE", "OPTION"],
+    methods: ["POST", "GET", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
